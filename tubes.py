@@ -46,45 +46,45 @@ plot_heatmap(data)
 
 # 4. barplot: Suhu vs Luas Kebakaran(top 5)
 def plot_barplot_temp_area_top5(df):
-    # Calculate the total area and average temperature for each month
+    # Hitung luas total dan suhu rata-rata untuk setiap bulan.
     monthly_stats = df.groupby('month').agg({'area': 'sum', 'temp': 'mean'}).reset_index()
     
-    # Sort the months by total area and get the top 5 months
+    # Urutkan bulan berdasarkan total luas wilayah dan ambil 5 bulan teratas.
     top5_months = monthly_stats.sort_values(by='area', ascending=False).head(5)['month']
     
-    # Filter the data to include only the top 5 months
+    # Saring data untuk hanya menyertakan 5 bulan teratas.
     df_top5 = monthly_stats[monthly_stats['month'].isin(top5_months)]
     
-    # Plot the barplot for the top 5 months
+    # Buat grafik batang untuk 5 bulan teratas.
     plt.figure(figsize=(16,8))
     sns.barplot(x='month', y='area', data=df_top5, color='red', alpha=0.7, label='Total Area')
     plt.title('Hubungan Suhu dengan Luas Kebakaran (Top 5)', fontsize=16)
     plt.xlabel('Bulan', fontsize=14)
     plt.ylabel('Luas Kebakaran (Total)', fontsize=14)
 
-    # Add a second axis to plot the temperature
+    # Tambahkan sumbu kedua untuk memplot suhu.
     ax2 = plt.gca().twinx()
     sns.lineplot(x='month', y='temp', data=df_top5, color='orange', marker='o', ax=ax2, label='Temperature (°C)')
     ax2.set_ylabel('Suhu (°C)', fontsize=14)
 
     plt.show()
 
-# Example usage
+# Contoh Penggunaan
 plot_barplot_temp_area_top5(data)
 
 
 # 5. barplot: Luas Kebakaran top 3 
 def plot_top3_barplot_area_month(df):
-    # Calculate the total area for each month
+    # Hitung total luas untuk setiap bulan.
     monthly_area = df.groupby('month')['area'].sum().reset_index()
     
-    # Sort the months by total area and get the top 3 months
+    # Urutkan bulan berdasarkan total luas wilayah dan ambil 3 bulan teratas.
     top3_months = monthly_area.sort_values(by='area', ascending=False).head(3)['month']
     
-    # Filter the data to include only the top 3 months
+    # Saring data untuk hanya menyertakan 3 bulan teratas.
     df_top3 = df[df['month'].isin(top3_months)]
     
-    # Plot the barplot for the top 3 months (showing the average area for each month)
+    # Buatlah grafik batang untuk 3 bulan teratas (menunjukkan luas rata-rata untuk setiap bulan).
     plt.figure(figsize=(16,8))
     sns.barplot(x='month', y='area', data=df_top3, hue='month', palette='Reds')
     plt.title('Distribusi Luas Kebakaran per Bulan (Top 3)', fontsize=16)
@@ -92,7 +92,7 @@ def plot_top3_barplot_area_month(df):
     plt.ylabel('Luas Kebakaran (Rata-rata)', fontsize=14)
     plt.show()
 
-# Example usage
+# Contoh Penggunaan
 plot_top3_barplot_area_month(data)
 
 # 6. Count Plot: Jumlah Kebakaran Berdasarkan Hari
@@ -155,21 +155,21 @@ plot_trend_kebakaran(data)
 
 def plot_interactive_bar_top5(df):
     try:
-        # Select the top 5 rows based on the 'area' column
+        # Pilih 5 baris teratas berdasarkan kolom 'area'.
         top5_df = df.nlargest(5, 'area')
 
-        # Create a bar plot with the filtered DataFrame
+        # Buat plot batang dengan DataFrame yang telah difilter.
         fig = px.bar(top5_df, x='temp', y='area', color='month',
                      title='Top 5 Hubungan Suhu dengan Luas Kebakaran (Interaktif) - Bar Plot',
                      labels={'temp': 'Suhu (°C)', 'area': 'Luas Kebakaran'},
                      hover_data=['X', 'Y', 'wind', 'rain'])
-        fig.update_layout(title_font_size=20)  # Change title font size
+        fig.update_layout(title_font_size=20)  # Ubah ukuran font judul
         fig.show()
     except ValueError as e:
         print("Terjadi kesalahan saat menampilkan Plotly Bar Plot:", e)
         print("Pastikan bahwa paket 'nbformat' telah terinstal dan versi Plotly serta nbformat memenuhi persyaratan.")
 
-# Call the function with your data
+# Panggil fungsi tersebut dengan data.
 plot_interactive_bar_top5(data)
 
 # 11. **Menampilkan Nilai yang Hilang**
@@ -184,50 +184,50 @@ data_miss(data)
 #12. Hujan di Suatu Area
 
 def hujan_area_top5(df):
-    # Select the top 5 rows based on the 'area' column
+    # Pilih 5 baris teratas berdasarkan kolom 'area'.
     top5_df = df.nlargest(5, 'area')
     
-    # Create the scatter plot with the filtered DataFrame
+    # Buat diagram sebar dengan DataFrame yang telah difilter.
     plt.figure(figsize=(10, 6))
     hujan = top5_df['rain']
     hari = top5_df['day']
     wilayah = top5_df['area']
     
-    # Plot the scatter plot
+    # Plot plot pencar
     plt.scatter(hari, wilayah, c=hujan, cmap='Reds')
     
-    # Add color bar and label
+    # Tambahkan warna dan label.
     hujan = plt.colorbar(orientation="horizontal")
     hujan.set_label(label="Hujan", size=18)
     
-    # Set labels and title
+    # Atur label dan judul
     plt.xlabel("Hari", fontsize=18)
     plt.ylabel("Area", fontsize=18)
     plt.title("Top 5 Hujan di Setiap Area", fontsize=18)
     
-    # Display the plot
+    # Tampilkan plotnya
     plt.show()
 
-# Call the function with your data
+# Panggil fungsi tersebut dengan data.
 hujan_area_top5(data)
 
 #13.Kecepatan angin di setiap bulanya (top 5)
 def plot_wind_month_top5(df):
-    # Select the top 5 rows based on the 'wind' column
+    # Pilih 5 baris teratas berdasarkan kolom 'angin'.
     top5_df = df.nlargest(5, 'wind')
     
-    # Create a barplot using sns.catplot or sns.barplot (based on your preference)
+    # Buat diagram batang menggunakan sns.catplot atau sns.barplot (sesuai preferensi).
     plt.figure(figsize=(10, 6))
     sns.barplot(x='wind', y='day', data=top5_df, hue='month', palette="Reds")
     
-    # Title and other plot customizations
+    # Judul dan penyesuaian alur cerita lainnya
     plt.title("Top 5 Wind Speed by Month", fontsize=16)
     plt.xlabel("Wind Speed", fontsize=14)
     plt.ylabel("Day", fontsize=14)
     plt.legend(title="Month", fontsize=12)
     plt.show()
 
-# Call the function with your data
+# Panggil fungsi tersebut dengan data.
 plot_wind_month_top5(data)
 
 #14. Suhu di setiap bulan
