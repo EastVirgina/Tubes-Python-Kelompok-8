@@ -334,3 +334,95 @@ plt.show()
         
         
 
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+import plotly.express as px
+import math
+
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error, r2_score
+from matplotlib import rcParams
+
+# =============================
+# SETTING AWAL
+# =============================
+sns.set_style('darkgrid')
+rcParams['figure.figsize'] = 10, 5
+
+# =============================
+# LOAD DATA
+# =============================
+data = pd.read_csv("forestFires.csv")
+
+print("=== Informasi Data ===")
+print(data.info())
+
+print("\n=== Statistik Deskriptif ===")
+print(data.describe())
+
+# =============================
+# VISUALISASI (KODE ASLI KAMU)
+# =============================
+def xy_kebakaran(df):
+    top10_df = df.nlargest(8, 'rain')
+    plt.title("Suhu saat Hujan untuk Setiap Bulan", fontsize=18)
+    sns.barplot(
+        x=top10_df['rain'],
+        y=top10_df['temp'],
+        hue=top10_df['month'],
+        palette='Reds'
+    )
+    plt.xlabel("Curah Hujan\n(0.0 tidak hujan – 6.4 hujan lebat)", fontsize=12)
+    plt.ylabel("Suhu (°C)", fontsize=12)
+
+xy_kebakaran(data)
+plt.show()
+
+# =============================
+# MACHINE LEARNING
+# REGRESI LINEAR
+# =============================
+
+# 1. Memilih fitur dan target
+X = data[['temp', 'rain', 'wind', 'RH']]
+y = data['area']
+
+# 2. Membagi data latih dan data uji
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+
+# 3. Membuat dan melatih model
+model = LinearRegression()
+model.fit(X_train, y_train)
+
+# 4. Prediksi
+y_pred = model.predict(X_test)
+
+# 5. Evaluasi model
+mse = mean_squared_error(y_test, y_pred)
+r2 = r2_score(y_test, y_pred)
+
+print("\n=== Evaluasi Model ===")
+print("Mean Squared Error (MSE):", mse)
+print("R2 Score:", r2)
+
+# 6. Interpretasi koefisien
+coef_df = pd.DataFrame({
+    'Fitur': X.columns,
+    'Koefisien': model.coef_
+})
+
+print("\n=== Kontribusi Fitur ===")
+print(coef_df)
+
+# 7. Visualisasi hasil prediksi
+plt.figure(figsize=(8,5))
+plt.scatter(y_test, y_pred, alpha=0.6)
+plt.xlabel("Luas Kebakaran Aktual")
+plt.ylabel("Luas Kebakaran Prediksi")
+plt.title("Perbandingan Luas Kebakaran Aktual vs Prediksi")
+plt.show()
