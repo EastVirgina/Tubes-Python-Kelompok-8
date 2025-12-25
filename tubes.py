@@ -4,6 +4,12 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import plotly.express as px
 import math
+
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error, r2_score
+from matplotlib import rcParams
+
 # Mengatur gaya menggunakan Seaborn
 sns.set_style('darkgrid')  
 
@@ -331,20 +337,6 @@ def xy_kebakaran (df) :
 xy_kebakaran(data)
 plt.show()
 
-        
-        
-
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
-import plotly.express as px
-import math
-
-from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LinearRegression
-from sklearn.metrics import mean_squared_error, r2_score
-from matplotlib import rcParams
 
 # =============================
 # SETTING AWAL
