@@ -5,6 +5,7 @@ import seaborn as sns
 import plotly.express as px
 import math
 
+
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error, r2_score
@@ -52,16 +53,16 @@ plot_heatmap(data)
 
 # 4. barplot: Suhu vs Luas Kebakaran(top 5)
 def plot_barplot_temp_area_top5(df):
-    # Hitung luas total dan suhu rata-rata untuk setiap bulan.
+    # Hitung total area dan rata rata suhu untuk setiap bulan.
     monthly_stats = df.groupby('month').agg({'area': 'sum', 'temp': 'mean'}).reset_index()
     
-    # Urutkan bulan berdasarkan total luas wilayah dan ambil 5 bulan teratas.
+    # Urutkan bulan berdasarkan total luas wilayah dan ambil 5 bulan terakhir.
     top5_months = monthly_stats.sort_values(by='area', ascending=False).head(5)['month']
     
-    # Saring data untuk hanya menyertakan 5 bulan teratas.
+    # Saring data untuk hanya menyertakan 5 bulan terakhir.
     df_top5 = monthly_stats[monthly_stats['month'].isin(top5_months)]
     
-    # Buat grafik batang untuk 5 bulan teratas.
+    # Buatlah grafik batang untuk 5 bulan terakhir.
     plt.figure(figsize=(16,8))
     sns.barplot(x='month', y='area', data=df_top5, color='red', alpha=0.7, label='Total Area')
     plt.title('Hubungan Suhu dengan Luas Kebakaran (Top 5)', fontsize=16)
@@ -75,11 +76,11 @@ def plot_barplot_temp_area_top5(df):
 
     plt.show()
 
-# Contoh Penggunaan
+# Contoh penggunaan
 plot_barplot_temp_area_top5(data)
 
 
-# 5. barplot: Luas Kebakaran top 3 
+# 5. Grafik batang: 3 Besar Luas Kebakaran
 def plot_top3_barplot_area_month(df):
     # Hitung total luas untuk setiap bulan.
     monthly_area = df.groupby('month')['area'].sum().reset_index()
@@ -98,7 +99,6 @@ def plot_top3_barplot_area_month(df):
     plt.ylabel('Luas Kebakaran (Rata-rata)', fontsize=14)
     plt.show()
 
-# Contoh Penggunaan
 plot_top3_barplot_area_month(data)
 
 # 6. Count Plot: Jumlah Kebakaran Berdasarkan Hari
@@ -169,13 +169,13 @@ def plot_interactive_bar_top5(df):
                      title='Top 5 Hubungan Suhu dengan Luas Kebakaran (Interaktif) - Bar Plot',
                      labels={'temp': 'Suhu (°C)', 'area': 'Luas Kebakaran'},
                      hover_data=['X', 'Y', 'wind', 'rain'])
-        fig.update_layout(title_font_size=20)  # Ubah ukuran font judul
+        fig.update_layout(title_font_size=20)  # Change title font size
         fig.show()
     except ValueError as e:
         print("Terjadi kesalahan saat menampilkan Plotly Bar Plot:", e)
         print("Pastikan bahwa paket 'nbformat' telah terinstal dan versi Plotly serta nbformat memenuhi persyaratan.")
 
-# Panggil fungsi tersebut dengan data.
+# Panggil fungsi tersebut dengan data Anda.
 plot_interactive_bar_top5(data)
 
 # 11. **Menampilkan Nilai yang Hilang**
@@ -202,7 +202,7 @@ def hujan_area_top5(df):
     # Plot plot pencar
     plt.scatter(hari, wilayah, c=hujan, cmap='Reds')
     
-    # Tambahkan warna dan label.
+    # Tambahkan bilah warna dan label.
     hujan = plt.colorbar(orientation="horizontal")
     hujan.set_label(label="Hujan", size=18)
     
@@ -214,7 +214,7 @@ def hujan_area_top5(df):
     # Tampilkan plotnya
     plt.show()
 
-# Panggil fungsi tersebut dengan data.
+# Panggil fungsi tersebut dengan data Anda.
 hujan_area_top5(data)
 
 #13.Kecepatan angin di setiap bulanya (top 5)
@@ -222,7 +222,7 @@ def plot_wind_month_top5(df):
     # Pilih 5 baris teratas berdasarkan kolom 'angin'.
     top5_df = df.nlargest(5, 'wind')
     
-    # Buat diagram batang menggunakan sns.catplot atau sns.barplot (sesuai preferensi).
+    # Buat diagram batang menggunakan sns.catplot atau sns.barplot (sesuai preferensi Anda).
     plt.figure(figsize=(10, 6))
     sns.barplot(x='wind', y='day', data=top5_df, hue='month', palette="Reds")
     
@@ -337,16 +337,60 @@ def xy_kebakaran (df) :
 xy_kebakaran(data)
 plt.show()
 
+#21. Analisis Regresi Linier Sederhana: Memprediksi Luas Kebakaran Berdasarkan Suhu        
+X = data[['temp']]
+y = data['area']
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+model = LinearRegression()
+model.fit(X_train, y_train)
+y_pred = model.predict(X_test)
+mse = mean_squared_error(y_test, y_pred)
+r2 = r2_score(y_test, y_pred)
+print("Mean Squared Error:", mse)
+print("R² Score:", r2)
+plt.figure(figsize=(10,6))
+plt.scatter(X_test, y_test, color='red', label='Data Sebenarnya')      
+plt.plot(X_test, y_pred, color='blue', linewidth=2, label='Garis Regresi')
+plt.title('Regresi Linier: Memprediksi Luas Kebakaran Berdasarkan Suhu', fontsize=16)
+plt.xlabel('Suhu (°C)', fontsize=14)    
+plt.ylabel('Luas Kebakaran', fontsize=14)
+plt.legend()
+
+plt.show()
+
+#22. Analisis Regresi Linier Sederhana: Memprediksi Luas Kebakaran Berdasarkan Kelembapan        
+X = data[['RH']]            
+y = data['area']
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+model = LinearRegression()
+model.fit(X_train, y_train)
+y_pred = model.predict(X_test)
+mse = mean_squared_error(y_test, y_pred)
+r2 = r2_score(y_test, y_pred)
+print("Mean Squared Error:", mse)
+print("R² Score:", r2)
+plt.figure(figsize=(10,6))
+plt.scatter(X_test, y_test, color='red', label='Data Sebenarnya')      
+plt.plot(X_test, y_pred, color='blue', linewidth=2, label='Garis Regresi')
+plt.title('Regresi Linier: Memprediksi Luas Kebakaran Berdasarkan Kelembapan', fontsize=16)
+plt.xlabel('Kelembapan (%)', fontsize=14)    
+plt.ylabel('Luas Kebakaran', fontsize=14)
+plt.legend()
+
+plt.show()
 
 # =============================
-# SETTING AWAL
+# MACHINE LEARNING
+# REGRESI LINEAR MULTIVARIATE
 # =============================
+
+
+
+# SETTING AWAL
 sns.set_style('darkgrid')
 rcParams['figure.figsize'] = 10, 5
 
-# =============================
 # LOAD DATA
-# =============================
 data = pd.read_csv("forestFires.csv")
 
 print("=== Informasi Data ===")
@@ -355,9 +399,7 @@ print(data.info())
 print("\n=== Statistik Deskriptif ===")
 print(data.describe())
 
-# =============================
-# VISUALISASI (KODE ASLI KAMU)
-# =============================
+# VISUALISASI
 def xy_kebakaran(df):
     top10_df = df.nlargest(8, 'rain')
     plt.title("Suhu saat Hujan untuk Setiap Bulan", fontsize=18)
@@ -372,11 +414,6 @@ def xy_kebakaran(df):
 
 xy_kebakaran(data)
 plt.show()
-
-# =============================
-# MACHINE LEARNING
-# REGRESI LINEAR
-# =============================
 
 # 1. Memilih fitur dan target
 X = data[['temp', 'rain', 'wind', 'RH']]
@@ -418,3 +455,33 @@ plt.xlabel("Luas Kebakaran Aktual")
 plt.ylabel("Luas Kebakaran Prediksi")
 plt.title("Perbandingan Luas Kebakaran Aktual vs Prediksi")
 plt.show()
+
+# 8. Visualisasi residuals
+residuals = y_test - y_pred
+plt.figure(figsize=(8,5))   
+plt.scatter(y_pred, residuals, alpha=0.6)
+plt.axhline(y=0, color='r', linestyle='--') 
+plt.xlabel("Luas Kebakaran Prediksi")
+plt.ylabel("Residuals") 
+plt.title("Residuals vs Luas Kebakaran Prediksi")
+
+plt.show()
+
+# 9. Plot distribusi residuals
+plt.figure(figsize=(8,5))
+sns.histplot(residuals, bins=30, kde=True, color='red') 
+plt.title("Distribusi Residuals")
+plt.xlabel("Residuals")
+plt.ylabel("Frekuensi")
+
+plt.show()
+
+# 10. Visualisasi hubungan fitur dengan target
+for feature in X.columns:   
+    plt.figure(figsize=(8,5))
+    sns.scatterplot(x=data[feature], y=data['area'], alpha=0.6, color='red')
+    plt.title(f"Hubungan antara {feature} dan Luas Kebakaran")
+    plt.xlabel(feature)
+    plt.ylabel("Luas Kebakaran")
+    
+    plt.show()
